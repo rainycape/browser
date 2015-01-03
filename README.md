@@ -12,7 +12,7 @@ To install browser run the following command:
 Then use the following import path to ensure a stable API:
 
 ```go
-    import "gopkgs.com/browser.v1
+    import "gopkgs.com/browser.v1"
 ```
 
 For documentation and available versions,
