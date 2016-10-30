@@ -41,8 +41,17 @@ func goosCmds(goos string) ([][]string, error) {
 }
 
 func openBrowser(url string) error {
-	if !strings.HasPrefix(url, "file://") && openRemoteBrowser(url) == nil {
-		return nil
+	if !strings.HasPrefix(url, "file://") {
+		if err := openRemoteBrowser(url); err != nil {
+			if err != errNoRemote {
+				// There's a remote connection, but the
+				// browser couldn't be opened
+				return err
+			}
+		} else {
+			// Succesfully opened a remote browser
+			return nil
+		}
 	}
 	cmds, err := goosCmds(runtime.GOOS)
 	if err != nil {
