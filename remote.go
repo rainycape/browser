@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -65,10 +66,16 @@ func openRemoteBrowser(url string) error {
 	}
 	var auth []ssh.AuthMethod
 	if sock := os.Getenv("SSH_AUTH_SOCK"); sock != "" {
-		conn, _ := net.Dial("unix", sock)
+		conn, err := net.Dial("unix", sock)
+		if err != nil {
+			log.Printf("error connecting to SSH_AUTH_SOCK: %v", err)
+		}
 		if conn != nil {
 			sshAgent := agent.NewClient(conn)
-			signers, _ := sshAgent.Signers()
+			signers, err := sshAgent.Signers()
+			if err != nil {
+				log.Printf("error getting ssh agent signers: %v", err)
+			}
 			if len(signers) > 0 {
 				auth = append(auth, ssh.PublicKeys(signers...))
 			}
